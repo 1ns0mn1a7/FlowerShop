@@ -11,6 +11,7 @@ class Event(models.Model):
 class Flower(models.Model):
     name = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    image = models.ImageField(upload_to='flowers/')
 
     def __str__(self):
         return self.name
@@ -28,10 +29,13 @@ class Bouquet(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
     size = models.CharField(max_length=50)
+    length = models.DecimalField(max_digits=10, decimal_places=2)
+    width = models.DecimalField(max_digits=10, decimal_places=2)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     events = models.ManyToManyField(Event)
     flowers = models.ManyToManyField(Flower)
     additions = models.ManyToManyField(Addition, blank=True)
+    image = models.ImageField(upload_to='bouquets/')
 
     def __str__(self):
         return self.name
