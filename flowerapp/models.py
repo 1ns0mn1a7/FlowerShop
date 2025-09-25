@@ -25,6 +25,15 @@ class Addition(models.Model):
         return self.name
 
 
+class BouquetFlower(models.Model):
+    bouquet = models.ForeignKey('Bouquet', on_delete=models.CASCADE)
+    flower = models.ForeignKey(Flower, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.flower.name} x{self.quantity}"
+
+
 class Bouquet(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
@@ -33,9 +42,9 @@ class Bouquet(models.Model):
     width = models.DecimalField(max_digits=10, decimal_places=2)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     events = models.ManyToManyField(Event)
-    flowers = models.ManyToManyField(Flower)
     additions = models.ManyToManyField(Addition, blank=True)
     image = models.ImageField(upload_to='bouquets/')
+    flowers = models.ManyToManyField(Flower, through=BouquetFlower)
 
     def __str__(self):
         return self.name
