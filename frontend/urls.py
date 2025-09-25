@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
@@ -16,6 +16,8 @@ urlpatterns = [
     path('quiz/', views.quiz, name='quiz'),
     path('quiz-step/', views.quiz_step, name='quiz_step'),
     path('result/', views.result, name='result'),
+
+    path('api/', include('flowerapp.urls')),
 ]
 
 if settings.DEBUG:

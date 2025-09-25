@@ -1,11 +1,9 @@
 {% load static %}
-<form action="{% url 'consultation' %}" method="post" class="singUpConsultation__form">
+<div class="title consultation__title">Оставьте заявку на консультацию</div>
+<form  method="post" class="consultation__form">
     {% csrf_token %}
-    <div class="title">{{ title_text|default:"Оставьте заявку на консультацию" }}</div>
     <input type="text" name="fname" class="consultation__form_input" placeholder="Введите Имя" required>
     <input type="text" name="tel" class="consultation__form_input" placeholder="+ 7 (999) 000 00 00" required>
     <button type="submit" class="consultation__form_btn">Отправить</button>
 </form>
-<div class="blockImgHiden"></div>
-
 <script src="{% static 'js/consultation.js' %}"></script>
