@@ -166,7 +166,29 @@ bottom: 0;
 	width: 398px;
 	height: 400px;
 	margin-right: 9px;
+	cursor: pointer;
+	position: relative;
 }
+
+.recommended__block::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(to top, rgba(0,0,0,0.3), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.recommended__block:hover::before {
+    opacity: 1;
+}
+.recommended__block:active {
+    transform: scale(0.95);
+}
+
+
 .recommended__block:last-child {
 	margin-right: 0;
 }
@@ -343,6 +365,8 @@ opacity: 0.3;
 .recommended__elems_sec .recommended__block_sec {
 	background: url('../img/catalog/catalogBg4.jpg') no-repeat center bottom / cover;
 }
+
+
 
 
 /*card.html*/
