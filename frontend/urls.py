@@ -9,7 +9,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name='index'),
     path('catalog/', views.catalog, name='catalog'),
-    path('card/', views.card, name='card'),
+    path('card/<int:bouquet_id>/', views.card, name='card'),
     path('order/', views.order, name='order'),
     path('order-step/', views.order_step, name='order_step'),
     path('consultation/', views.consultation, name='consultation'),
