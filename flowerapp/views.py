@@ -19,3 +19,8 @@ def create_consultation(request):
     )
 
     return Response({'success': 'Заявка создана', 'id': consultation.id}, status=status.HTTP_201_CREATED)
+
+
+@api_view(['POST'])
+def create_order(request):
+    name = request.data.get('client_name', '').strip()

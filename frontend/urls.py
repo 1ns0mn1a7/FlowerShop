@@ -16,7 +16,6 @@ urlpatterns = [
     path('quiz/', views.quiz, name='quiz'),
     path('quiz-step/', views.quiz_step, name='quiz_step'),
     path('result/', views.result, name='result'),
-
     path('api/', include('flowerapp.urls')),
 ]
 
