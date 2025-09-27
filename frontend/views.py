@@ -6,8 +6,6 @@ from flowerapp.models import Bouquet
 def index(request): return render(request, 'index.html')
 def catalog(request): return render(request, 'catalog.html')
 def consultation(request): return render(request, 'consultation.html')
-def quiz(request): return render(request, 'quiz.html')
-def quiz_step(request): return render(request, 'quiz-step.html')
 def result(request): return render(request, 'result.html')
 def card(request, bouquet_id):
     bouquet_test = {
@@ -60,3 +58,26 @@ def order_step(request):
             return redirect('result')
 
     return render(request, 'order-step.html', {'order_data': order_data})
+
+def quiz(request):
+    #тут цикл из событий
+    if request.method == 'POST':
+        event = request.POST.get('event')
+        request.session['quiz'] = {'event': event}
+        return redirect('quiz_step')
+
+    events = [
+        {'id':1, 'name':'Свадьба'},
+        {'id': 1, 'name': 'День рождения'},
+        {'id': 1, 'name': 'Без повода'},
+    ]
+    return render(request, 'quiz.html', {'events': events})
+
+
+def quiz_step(request):
+    if request.method == 'POST':
+        price = request.POST.get('price')
+        kek = request.session.get('quiz')
+        request.session['quiz'].update({'price': price})
+        return redirect('result')
+    return render(request, 'quiz-step.html')

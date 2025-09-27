@@ -9,6 +9,7 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Unbounded:wght@700&display=swap" rel="stylesheet">
+    <script src="{% static 'js/index.js' %}"></script>
 	<link rel="stylesheet" href="{% static 'css/main.css' %}">
 </head>
 
@@ -37,7 +38,7 @@
 					<div class="banner__block">
 						<h1 class="banner__title">Мастерская цветов</h1>
 						<p class="banner__text">Подберем для вас букет за два шага, который идеально подойдет под вашу ситуацию</p>
-						<button class="btn banner__btn">Подобрать букет</button>
+						<button id="quizButton" class="btn banner__btn">Подобрать букет</button>
 					</div>
 					<img src="{% static 'img/bannerImg.png' %}" alt="banner Img" class="banner__img">
 				</div>
