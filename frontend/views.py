@@ -6,7 +6,7 @@ from flowerapp.models import Bouquet
 def index(request): return render(request, 'index.html')
 def catalog(request): return render(request, 'catalog.html')
 def consultation(request): return render(request, 'consultation.html')
-def result(request): return render(request, 'result.html')
+
 def card(request, bouquet_id):
     bouquet_test = {
         "id":1,
@@ -55,7 +55,7 @@ def order_step(request):
         if order_data:
             del request.session['order_data']
             #Вкорячить оплату
-            return redirect('result')
+            return redirect('index')
 
     return render(request, 'order-step.html', {'order_data': order_data})
 
@@ -81,3 +81,26 @@ def quiz_step(request):
         request.session['quiz'].update({'price': price})
         return redirect('result')
     return render(request, 'quiz-step.html')
+
+
+def result(request):
+    #Должна быть логика выбора
+    bouquet_test = {
+        "id": 1,
+        # Здесь цикл для цветов, желательно отдельной функцией
+        "flowers": """
+            Гортензия розовая - 1 шт.\n
+            Ветки эквалипта - 5 шт.\n
+            Гипсофила - 1 шт.\n
+            Матовая упаковка - 1 шт.\n
+            Лента атласная - 1 шт.\n
+            Рекомендация по уходу - 1 шт.\n
+            Открыточка с вашими пожеланиями - 1 шт.\n
+            Любовь флориста (бесплатно) - 1 шт.\n
+            """,
+            "price": 3700,
+            "width": 30,
+            "height": 40,
+            "img": "img/catalog/catalogBg1.jpg"
+    }
+    return render(request, 'result.html', {"bouquet": bouquet_test})

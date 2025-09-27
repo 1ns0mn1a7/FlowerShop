@@ -58,13 +58,13 @@
 							</div>
 						</div>
 					</div>
-					<img src="{% static 'img/cardImg.jpg' %}" alt="result Img" class="result__block_img">
-					<form  class="result__items">
-						<div class="title result__items_title">Летнее утро</div>
-						<div class="result__items_price">3 600 руб</div>
-						<button type="submit" class="btn result__items_btn">Заказать букет</button>
-						<hr class="result__items_line" />
-						<div class="result__items_intro">Хотите что-то более специальное?</div>
+					<img src="{% static bouquet.img %}" alt="{{ bouquet.name }}" class="result__block_img">
+					<form method="get" action="/order/" class="result__items">
+                        {% csrf_token %}
+                        <div class="result__items_price">{{ bouquet.price }} руб</div>
+                        <button name="bouquet_id" value="{{ bouquet.id }}" type="submit" class="btn result__items_btn">Заказать букет</button>
+                        <hr class="result__items_line" />
+                        <div class="result__items_intro">Хотите что-то более специальное?</div>
                         <div class="result__items_block">
                             <form action="{% url 'catalog' %}" method="get" >
                                 <button  class="btn largeBtn result__items_block__btn">Смотреть всю коллекцию</button>
