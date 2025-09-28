@@ -1,50 +1,32 @@
 from django.shortcuts import render, get_object_or_404, redirect
 
-from flowerapp.models import Bouquet, BouquetFlower, Event
+from flowerapp.models import Bouquet
 
 
 def index(request): return render(request, 'index.html')
 def catalog(request): return render(request, 'catalog.html')
 def consultation(request): return render(request, 'consultation.html')
-def result(request): return render(request, 'result.html')
-
-
-def quiz(request):
-    events = Event.objects.all()
-    return render(request, 'quiz.html', {"events": events})
-
-
-def quiz_step(request):
-    event = request.GET.get('event')
-    prices = get_object_or_404(Bouquet, events=event)
-    return render(request, 'quiz-step.html', {
-        'event': event,
-        'prices': prices
-    })
-
 
 def card(request, bouquet_id):
-    bouquet = get_object_or_404(
-        Bouquet.objects.prefetch_related('flowers'),
-        id=bouquet_id
-        )
-
-    bouquet_flowers = BouquetFlower.objects.filter(
-        bouquet=bouquet).select_related("flower")
-
-    serialized_bouquet = {
-        "id": bouquet.id,
-        "name": bouquet.name,
-        "flowers": ''.join(
-            f'{bouquet_flower.flower.name} - {bouquet_flower.quantity} шт.\n'
-            for bouquet_flower in bouquet_flowers
-            ),
-        "price": bouquet.price,
-        "width": bouquet.width,
-        "height": bouquet.length,
-        "img": bouquet.image.url
+    bouquet_test = {
+        "id":1,
+        # Здесь цикл для цветов, желательно отдельной функцией
+        "flowers": """
+        Гортензия розовая - 1 шт.\n
+        Ветки эквалипта - 5 шт.\n
+        Гипсофила - 1 шт.\n
+        Матовая упаковка - 1 шт.\n
+        Лента атласная - 1 шт.\n
+        Рекомендация по уходу - 1 шт.\n
+        Открыточка с вашими пожеланиями - 1 шт.\n
+        Любовь флориста (бесплатно) - 1 шт.\n
+        """,
+        "price":3600,
+        "width":30,
+        "height":40,
+        "img":"img/catalog/catalogBg1.jpg"
     }
-    return render(request, 'card.html', {"bouquet": serialized_bouquet})
+    return render(request, 'card.html', {"bouquet": bouquet_test})
 
 
 def order(request):
@@ -54,7 +36,7 @@ def order(request):
         #Не придумал че вкорячить
         request.session['order_data'] = {
             'bouquet_id': bouquet_id,
-            'client_name': request.POST.get('fname'),
+            'client_name':request.POST.get('fname'),
             'client_phone': request.POST.get('tel'),
             'client_address': request.POST.get('adres'),
             'delivery_time': request.POST.get('orderTime')
@@ -73,24 +55,52 @@ def order_step(request):
         if order_data:
             del request.session['order_data']
             #Вкорячить оплату
-            return redirect('result')
+            return redirect('index')
 
     return render(request, 'order-step.html', {'order_data': order_data})
 
+def quiz(request):
+    #тут цикл из событий
+    if request.method == 'POST':
+        event = request.POST.get('event')
+        request.session['quiz'] = {'event': event}
+        return redirect('quiz_step')
+
+    events = [
+        {'id':1, 'name':'Свадьба'},
+        {'id': 1, 'name': 'День рождения'},
+        {'id': 1, 'name': 'Без повода'},
+    ]
+    return render(request, 'quiz.html', {'events': events})
+
+
+def quiz_step(request):
+    if request.method == 'POST':
+        price = request.POST.get('price')
+        kek = request.session.get('quiz')
+        request.session['quiz'].update({'price': price})
+        return redirect('result')
+    return render(request, 'quiz-step.html')
+
 
 def result(request):
-    try:
-        price = int(request.GET.get('price'))
-    except ValueError:
-        price = None
-
-    event_id = request.GET.get('events')
-
-    bouquets = Bouquet.objects.prefetch_related('flowers')
-
-    if price:
-        bouquets = bouquets.filter(price__lte=price)
-    if event_id:
-        bouquets = bouquets.filter(event__id=event_id)
-
-    return render(request, 'result.html', {'bouquets': bouquets})
+    #Должна быть логика выбора
+    bouquet_test = {
+        "id": 1,
+        # Здесь цикл для цветов, желательно отдельной функцией
+        "flowers": """
+            Гортензия розовая - 1 шт.\n
+            Ветки эквалипта - 5 шт.\n
+            Гипсофила - 1 шт.\n
+            Матовая упаковка - 1 шт.\n
+            Лента атласная - 1 шт.\n
+            Рекомендация по уходу - 1 шт.\n
+            Открыточка с вашими пожеланиями - 1 шт.\n
+            Любовь флориста (бесплатно) - 1 шт.\n
+            """,
+            "price": 3700,
+            "width": 30,
+            "height": 40,
+            "img": "img/catalog/catalogBg1.jpg"
+    }
+    return render(request, 'result.html', {"bouquet": bouquet_test})

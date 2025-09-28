@@ -37,52 +37,16 @@
 				<div class="title">Все букеты</div>
 				<div class="catalog__block">
 					<div class="recommended__elems ficb recommended__elems_first">
-
-						<div class="recommended__block recommended__block_first">
-							<div class="recommended__block_elems ficb">
-								<span class="recommended__block_intro">Летнее утро</span>
-								<span class="recommended__block_price">3 600 руб</span>
-							</div>
-						</div>
-
-						<div class="recommended__block recommended__block_sec">
-							<div class="recommended__block_elems ficb">
-								<span class="recommended__block_intro">Пламенный закат</span>
-								<span class="recommended__block_price">3 600 руб</span>
-							</div>
-						</div>
-
-						<div class="recommended__block recommended__block_thr">
-							<div class="recommended__block_elems ficb">
-								<span class="recommended__block_intro">Осенний</span>
-								<span class="recommended__block_price">3 600 руб</span>
-							</div>
-						</div>
+                        {#  Здесь необходим цикл  #}
+                        {% include 'bouquet_card.html' with id=1 name="Летнее утро" price="3 600" %}
+                        {% include 'bouquet_card.html' with id=2 name="Пламенный закат" price="3 600" %}
+                        {% include 'bouquet_card.html' with id=3 name="Осенний" price="3 600" %}
 					</div>
-
 					<div class="recommended__elems ficb recommended__elems_sec">
-
-						<div class="recommended__block recommended__block_first">
-							<div class="recommended__block_elems ficb">
-								<span class="recommended__block_intro">Полевой</span>
-								<span class="recommended__block_price">1 600 руб</span>
-							</div>
-						</div>
-
-						<div class="recommended__block recommended__block_sec">
-							<div class="recommended__block_elems ficb">
-								<span class="recommended__block_intro">Весенний</span>
-								<span class="recommended__block_price">3 200 руб</span>
-							</div>
-						</div>
-
-						<div class="recommended__block recommended__block_thr">
-							<div class="recommended__block_elems ficb">
-								<span class="recommended__block_intro">Нежный</span>
-								<span class="recommended__block_price">2 900 руб</span>
-							</div>
-						</div>
-						
+                        {#  Здесь необходим цикл  #}
+                        {% include 'bouquet_card.html' with id=4 name="Полевой" price="1 600" %}
+                        {% include 'bouquet_card.html' with id=5 name="Весенний" price="3 200" %}
+                        {% include 'bouquet_card.html' with id=6 name="Нежный" price="2 900" %}
 					</div>
 					<button class="btn largeBtn catalog__btn">Показать ещё</button>
 				</div>
@@ -92,17 +56,9 @@
 
 	<section id="consultation">
 		<div class="container">
-
 			<div class="consultation">
-				<div class="title consultation__title">Оставьте заявку на консультацию</div>
-				<form method="post" action="{% url 'consultation' %}" class="consultation__form">
-					{% csrf_token %}
-					<input type="text" name="fname" class="consultation__form_input" placeholder="Введите Имя" required>
-					<input type="text" name="tel" class="consultation__form_input" placeholder="+ 7 (999) 000 00 00" required>
-					<button type="submit" class="consultation__form_btn">Отправить</button>
-				</form>
+				{% include 'consultation_form.html' %}
 			</div>
-
 		</div>
 	</section>
 	

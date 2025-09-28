@@ -2,7 +2,6 @@ from pathlib import Path
 import environ
 import os
 
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env(
@@ -23,6 +22,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'frontend',
     'flowerapp',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -87,8 +87,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'frontend' / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-
-MEDIA_ROOT = os.path.join(BASE_DIR, 'img')
-MEDIA_URL = '/img/'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
