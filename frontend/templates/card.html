@@ -35,21 +35,34 @@
 		<div class="container">
 			<div class="card ficb">
 				<div class="card__block card__block_first">
-					<img src="{{ bouquet.image }}" alt="{{ bouquet.name }}" class="card__img">
+					{% if bouquet.image_card %}
+						<img src="{{ bouquet.image_card.url }}" alt="{{ bouquet.name }}" class="card__img">
+					{% else %}
+						<img src="{{ bouquet.image.url }}" alt="{{ bouquet.name }}" class="card__img">
+					{% endif %}
 				</div>
+
 				<div class="card__block card__block_sec">
 					<div class="title">{{ bouquet.name }}</div>
 					<div class="card__block_price">{{ bouquet.price }} руб</div>
+
 					<div class="card__elems ">
 						<span class="card__elems_intro">Состав</span>
 						<div class="card__items">
-                            {% for flower in bouquet.flowers %}
+                            {% for item in components %}
                                 <span class="card_items_intro">
-                                    {{ flower.name }} - {{ flower.amount }} шт.
-                                </span>
+									{{ item.flower.name }} - {{ item.quantity }} шт.
+								</span>
+							{% endfor %}
+
+							{% for add in bouquet.additions.all %}
+								<span class="card_items_intro">{{ add.name }} - {{ add.default_qty }} шт.</span>
+							{% empty %}
+								<span class="card_items_intro">Состав не указан</span>
                             {% endfor %}
 						</div>
 					</div>
+
 					<div class="card__elems ">
 						<span class="card__elems_intro">Размер</span>
 						<div class="card__items">

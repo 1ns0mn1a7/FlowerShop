@@ -25,7 +25,7 @@ class Flower(models.Model):
 
 class Addition(models.Model):
     name = models.CharField('Название доп. опции', max_length=100)
-    # price = models.DecimalField(max_digits=10, decimal_places=2)
+    default_qty = models.PositiveSmallIntegerField('шт', default=1)
     
     class Meta:
         verbose_name = 'Доп. опция'

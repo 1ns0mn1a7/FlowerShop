@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
-
-from flowerapp.models import Bouquet
+from django.db.models import Prefetch
+from flowerapp.models import Bouquet, BouquetFlower
 
 
 def index(request): return render(request, 'index.html')
@@ -8,25 +8,19 @@ def catalog(request): return render(request, 'catalog.html')
 def consultation(request): return render(request, 'consultation.html')
 
 def card(request, bouquet_id):
-    bouquet_test = {
-        "id":1,
-        # Здесь цикл для цветов, желательно отдельной функцией
-        "flowers": """
-        Гортензия розовая - 1 шт.\n
-        Ветки эквалипта - 5 шт.\n
-        Гипсофила - 1 шт.\n
-        Матовая упаковка - 1 шт.\n
-        Лента атласная - 1 шт.\n
-        Рекомендация по уходу - 1 шт.\n
-        Открыточка с вашими пожеланиями - 1 шт.\n
-        Любовь флориста (бесплатно) - 1 шт.\n
-        """,
-        "price":3600,
-        "width":30,
-        "height":40,
-        "img":"img/catalog/catalogBg1.jpg"
-    }
-    return render(request, 'card.html', {"bouquet": bouquet_test})
+    bf_qs = BouquetFlower.objects.select_related('flower')
+    bouquet = get_object_or_404(
+        Bouquet.objects.prefetch_related(
+            Prefetch('bouquetflower_set', queryset=bf_qs),
+            'additions',
+        ),
+        pk=bouquet_id
+    )
+    components = bouquet.bouquetflower_set.all()
+    return render(request, 'card.html', {
+        'bouquet': bouquet,
+        'components': components,
+    })
 
 
 def order(request):

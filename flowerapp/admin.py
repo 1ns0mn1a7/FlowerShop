@@ -21,7 +21,7 @@ class FlowerAdmin(admin.ModelAdmin):
 
 @admin.register(Addition)
 class AdditionAdmin(admin.ModelAdmin):
-    list_display = ('name',)
+    list_display = ('name', 'default_qty')
     search_fields = ('name',)
     
     
