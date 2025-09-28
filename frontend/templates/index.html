@@ -57,7 +57,11 @@
 							<p>Пока нет рекомендаций.</p>
 						{% endfor %}
 				</div>
-				<button class="btn recommended__btn">Показать всю коллекцию</button>
+				<button type="button"
+						class="btn recommended__btn"
+						onclick="location.href='{% url 'catalog' %}'">
+					Показать всю коллекцию
+				</button>
 			</div>
 		</div>
 	</section>
