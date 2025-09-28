@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'frontend',
     'flowerapp',
     'rest_framework',
+    'django.contrib.humanize',
 ]
 
 MIDDLEWARE = [
@@ -76,7 +77,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru'
 
 TIME_ZONE = 'UTC'
 

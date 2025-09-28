@@ -44,7 +44,8 @@
 
 				<div class="card__block card__block_sec">
 					<div class="title">{{ bouquet.name }}</div>
-					<div class="card__block_price">{{ bouquet.price }} руб</div>
+					{% load humanize %}
+					<div class="card__block_price">{{ bouquet.price|floatformat:0|intcomma:True }} руб</div>
 
 					<div class="card__elems ">
 						<span class="card__elems_intro">Состав</span>
