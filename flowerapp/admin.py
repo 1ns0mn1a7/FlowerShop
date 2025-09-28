@@ -1,3 +1,6 @@
+import csv
+from django.http import HttpResponse
+from django.utils import timezone
 from django.contrib import admin
 from django.utils.html import format_html
 from .models import (
@@ -60,6 +63,31 @@ class CourierAdmin(admin.ModelAdmin):
     search_fields = ('name', 'phone')
 
 
+@admin.action(description='Экспорт выделенных в CSV')
+def export_orders_csv(modeladmin, request, queryset):
+    response = HttpResponse(content_type='text/csv; charset=utf-8')
+    response['Content-Disposition'] = (
+        f'attachment; filename="orders_{timezone.now():%Y%m%d_%H%M%S}.csv"'
+    )
+    response.write('\ufeff')
+    
+    writer = csv.writer(response, delimiter=';')
+    writer.writerow(['ID', 'Дата', 'Клиент', 'Телефон', 'Букет', 'Сумма', 'Статус'])
+    
+    for order in queryset.select_related('bouquet'):
+        writer.writerow([
+            order.id,
+            order.created_at.strftime('%Y-%m-%d %H:%M'),
+            order.client_name,
+            order.client_phone,
+            order.bouquet.name if order.bouquet_id else '',
+            order.bouquet.price if order.bouquet_id else '',
+            order.get_status_display(),
+        ])
+
+    return response
+
+
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = ('id', 'client_name', 'client_phone', 'bouquet', 'status', 'courier', 'created_at')
@@ -68,6 +96,7 @@ class OrderAdmin(admin.ModelAdmin):
     date_hierarchy = 'created_at'
     readonly_fields = ('created_at',)
     autocomplete_fields = ('bouquet', 'courier')
+    actions = [export_orders_csv]
     
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
