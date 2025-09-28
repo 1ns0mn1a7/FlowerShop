@@ -1,10 +1,18 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Prefetch
 from flowerapp.models import Bouquet, BouquetFlower
+from django.core.paginator import Paginator
 
 
 def index(request): return render(request, 'index.html')
-def catalog(request): return render(request, 'catalog.html')
+
+
+def catalog(request):
+    qs = Bouquet.objects.only('id','name','price','image','image_card').order_by('id')
+    page = Paginator(qs, 6).get_page(request.GET.get('page'))
+    return render(request, 'catalog.html', {'page_obj': page})
+
+
 def consultation(request): return render(request, 'consultation.html')
 
 def card(request, bouquet_id):

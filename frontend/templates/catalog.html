@@ -1,4 +1,4 @@
-{% load static %}
+{% load static humanize %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -35,19 +35,20 @@
 		<div class="container p100">
 			<div class="catalog">
 				<div class="title">Все букеты</div>
+
 				<div class="catalog__block">
 					<div class="recommended__elems ficb recommended__elems_first">
-                        {#  Здесь необходим цикл  #}
-                        {% include 'bouquet_card.html' with id=1 name="Летнее утро" price="3 600" %}
-                        {% include 'bouquet_card.html' with id=2 name="Пламенный закат" price="3 600" %}
-                        {% include 'bouquet_card.html' with id=3 name="Осенний" price="3 600" %}
+                        {% for b in page_obj.object_list|slice:":3" %}
+							{% include 'bouquet_card.html' with bouquet=b %}
+						{% endfor %}
 					</div>
+
 					<div class="recommended__elems ficb recommended__elems_sec">
-                        {#  Здесь необходим цикл  #}
-                        {% include 'bouquet_card.html' with id=4 name="Полевой" price="1 600" %}
-                        {% include 'bouquet_card.html' with id=5 name="Весенний" price="3 200" %}
-                        {% include 'bouquet_card.html' with id=6 name="Нежный" price="2 900" %}
+                        {% for b in page_obj.object_list|slice:"3:6" %}
+							{% include 'bouquet_card.html' with bouquet=b %}
+						{% endfor %}
 					</div>
+					
 					<button class="btn largeBtn catalog__btn">Показать ещё</button>
 				</div>
 			</div>
