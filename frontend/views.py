@@ -1,6 +1,9 @@
+import random
+from unittest import case
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Prefetch
-from flowerapp.models import Bouquet, BouquetFlower
+from flowerapp.models import Bouquet, BouquetFlower, Event, Flower, Addition
 from django.core.paginator import Paginator
 
 
@@ -74,43 +77,83 @@ def quiz(request):
     if request.method == 'POST':
         event = request.POST.get('event')
         request.session['quiz'] = {'event': event}
+        request.session.modified = True
         return redirect('quiz_step')
 
-    events = [
-        {'id':1, 'name':'Свадьба'},
-        {'id': 1, 'name': 'День рождения'},
-        {'id': 1, 'name': 'Без повода'},
-    ]
+    events = Event.objects.all().values("id", "name")
     return render(request, 'quiz.html', {'events': events})
 
 
 def quiz_step(request):
     if request.method == 'POST':
         price = request.POST.get('price')
-        kek = request.session.get('quiz')
-        request.session['quiz'].update({'price': price})
+        quiz_data = request.session.get('quiz', {})
+        quiz_data['price'] = price
+        request.session['quiz'] = quiz_data
+        request.session.modified = True
         return redirect('result')
     return render(request, 'quiz-step.html')
 
 
 def result(request):
-    #Должна быть логика выбора
-    bouquet_test = {
-        "id": 1,
-        # Здесь цикл для цветов, желательно отдельной функцией
-        "flowers": """
-            Гортензия розовая - 1 шт.\n
-            Ветки эквалипта - 5 шт.\n
-            Гипсофила - 1 шт.\n
-            Матовая упаковка - 1 шт.\n
-            Лента атласная - 1 шт.\n
-            Рекомендация по уходу - 1 шт.\n
-            Открыточка с вашими пожеланиями - 1 шт.\n
-            Любовь флориста (бесплатно) - 1 шт.\n
-            """,
-            "price": 3700,
-            "width": 30,
-            "height": 40,
-            "img": "img/catalog/catalogBg1.jpg"
-    }
-    return render(request, 'result.html', {"bouquet": bouquet_test})
+    data = request.session.get('quiz')
+    event_id = data['event']
+    price_id =data['price']
+
+    bouquets_query = Bouquet.objects.filter(events__id=event_id).distinct()
+
+    bouquet_flowers_prefetch = Prefetch(
+        'bouquetflower_set',
+        queryset=BouquetFlower.objects.select_related('flower'),
+        to_attr='flower_items'
+    )
+    additions_prefetch = Prefetch(
+        'additions',
+        queryset=Addition.objects.all(),
+        to_attr='addition_items'
+    )
+
+    match price_id:
+        case '1':
+            filtered = bouquets_query.filter(price__lt=1000)
+        case '2':
+            filtered = bouquets_query.filter(price__range=(1000, 5000))
+        case '3':
+            filtered = bouquets_query.filter(price__gt=5000)
+        case '4':
+            filtered = bouquets_query
+
+    if not filtered.exists():
+        filtered = bouquets_query
+
+    final_bouquets = filtered.prefetch_related(
+        bouquet_flowers_prefetch,
+        additions_prefetch
+    )
+
+    bouquet_list = []
+    for bouquet in final_bouquets:
+        flowers_lines = [
+            f"{bf.flower.name} - {bf.quantity} шт."
+            for bf in bouquet.bouquetflower_set.all()
+        ]
+        additions_lines = [
+            f"{addition.name} - {addition.default_qty} шт."
+            for addition in bouquet.additions.all()
+        ]
+        all_lines = flowers_lines + additions_lines
+        full_composition = "\n".join(all_lines) + "\n"
+        bouquet_data = {
+            "id": bouquet.id,
+            "name": bouquet.name,
+            "flowers": full_composition,
+            "price": int(bouquet.price),
+            "width": float(bouquet.width),
+            "height": float(bouquet.length),
+            "img": bouquet.image.url if bouquet.image else "",
+            "description": bouquet.description
+        }
+        bouquet_list.append(bouquet_data)
+
+    selected_bouquet = random.choice(bouquet_list) if bouquet_list else None
+    return render(request, 'result.html', {"bouquet": selected_bouquet})
