@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.crypto import get_random_string
 
 
 class Event(models.Model):
@@ -94,6 +95,15 @@ class Order(models.Model):
         ('delivered', 'Доставлен'),
     ]
 
+    DELIVERY_TIME_CHOICES = [
+        ('1', 'Как можно скорее'),
+        ('2', 'с 10:00 до 12:00'),
+        ('3', 'с 12:00 до 14:00'),
+        ('4', 'с 14:00 до 16:00'),
+        ('5', 'с 16:00 до 18:00'),
+        ('6', 'с 18:00 до 20:00'),
+    ]
+
     client_name = models.CharField('Имя клиента', max_length=100)
     client_phone = models.CharField('Телефон клиента', max_length=20)
     client_address = models.TextField('Адрес клиента')
@@ -104,6 +114,12 @@ class Order(models.Model):
     )
     status = models.CharField('Статус', max_length=20, choices=STATUS_CHOICES, default='accepted')
     created_at = models.DateTimeField('Создан', auto_now_add=True)
+    delivery_time = models.CharField(
+        verbose_name='Время доставки',
+        max_length=10,
+        choices=DELIVERY_TIME_CHOICES,
+        default='asap'
+    )
 
     class Meta:
         verbose_name = 'Заказ'
@@ -132,4 +148,17 @@ class Consultation(models.Model):
 
     def __str__(self):
         return f'Консультация - {self.client_name}'
-    
+
+class ClickCounter(models.Model):
+    token = models.CharField(
+        max_length=20,
+        unique=True,
+        default=get_random_string(length=20)
+    )
+    clicks = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.id}: {self.clicks} clicks"
+
+    def get_absolute_url(self, request):
+        return f"{request.scheme}://{request.get_host()}/?ref={self.token}"
