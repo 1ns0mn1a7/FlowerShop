@@ -67,11 +67,12 @@
 					<div class="card__elems ">
 						<span class="card__elems_intro">Размер</span>
 						<div class="card__items">
+						{% load l10n %}
 							<span class="card_items_intro">
-								Высота - {{ bouquet.length }} см
+								Высота - {{ bouquet.length|floatformat:0|localize }} см
 							</span>
 							<span class="card_items_intro">
-								Ширина - {{ bouquet.width }} см
+								Ширина - {{ bouquet.width|floatformat:0|localize }} см
 							</span>
 						</div>
 					</div>
