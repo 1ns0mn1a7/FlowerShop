@@ -36,7 +36,7 @@
 			<div class="catalog">
 				<div class="title">Все букеты</div>
 
-				<div class="catalog__block">
+				<div class="catalog__block" id="catalogBlock">
 					<div class="recommended__elems ficb recommended__elems_first">
                         {% for b in page_obj.object_list|slice:":3" %}
 							{% include 'bouquet_card.html' with bouquet=b %}
@@ -49,7 +49,14 @@
 						{% endfor %}
 					</div>
 
-					<button class="btn largeBtn catalog__btn">Показать ещё</button>
+					{% if page_obj.has_next %}
+					<button type="button" id="loadMoreBtn"
+							class="btn largeBtn catalog__btn"
+							data-current="{{ page_obj.number }}"
+							data-total="{{ page_obj.paginator.num_pages }}">
+						Показать ещё
+					</button>
+					{% endif %}
 				</div>
 			</div>
 		</div>
@@ -82,5 +89,8 @@
 			</div>
 		</div>
 	</footer>
+
+	<script type="module" src="{% static 'js/loadmore.js' %}"></script>
+
 </body>
 </html>
