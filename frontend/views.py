@@ -16,8 +16,6 @@ def catalog(request):
     return render(request, 'catalog.html', {'page_obj': page})
 
 
-def consultation(request): return render(request, 'consultation.html')
-
 def card(request, bouquet_id):
     bf_qs = BouquetFlower.objects.select_related('flower')
     bouquet = get_object_or_404(
