@@ -15,20 +15,13 @@ class BouquetFlowerInline(admin.TabularInline):
 
 @admin.register(Flower)
 class FlowerAdmin(admin.ModelAdmin):
-    list_display = ('name', 'price', 'image_preview')
+    list_display = ('name',)
     search_fields = ('name',)
-    readonly_fields = ('image_preview',)
-    
-    @admin.display(description='Preview')
-    def image_preview(self, object):
-        if object.image:
-            return format_html('<img src="{}" style="height:60px;">', object.image.url)
-        return '—'
     
 
 @admin.register(Addition)
 class AdditionAdmin(admin.ModelAdmin):
-    list_display = ('name', 'price')
+    list_display = ('name',)
     search_fields = ('name',)
     
     
@@ -40,17 +33,23 @@ class EventAdmin(admin.ModelAdmin):
 
 @admin.register(Bouquet)
 class BouquetAdmin(admin.ModelAdmin):
-    list_display = ('name', 'price', 'size', 'image_preview')
+    list_display = ('name', 'price', 'catalog_preview', 'card_preview')
     search_fields = ('name', 'description')
     list_filter = ('events', 'additions')
-    readonly_fields = ('image_preview',)
+    readonly_fields = ('catalog_preview', 'card_preview')
     filter_horizontal = ('events', 'additions')
     inlines = [BouquetFlowerInline]
 
-    @admin.display(description='Preview')
-    def image_preview(self, object):
-        if object.image:
-            return format_html('<img src="{}" style="height:60px;">', object.image.url)
+    @admin.display(description='Каталог')
+    def catalog_preview(self, obj):
+        if obj.image and hasattr(obj.image, 'url'):
+            return format_html('<img src="{}" style="height:60px;">', obj.image.url)
+        return '—'
+
+    @admin.display(description='Карточка')
+    def card_preview(self, obj):
+        if obj.image_card and hasattr(obj.image_card, 'url'):
+            return format_html('<img src="{}" style="height:60px;">', obj.image_card.url)
         return '—'
 
 
