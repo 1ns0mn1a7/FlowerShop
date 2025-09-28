@@ -8,7 +8,9 @@ env = environ.Env(
     DEBUG=(bool, False),
 )
 environ.Env.read_env(BASE_DIR / ".env")
-
+STRIPE_SECRET_KEY=env('STRIPE_SECRET_KEY')
+STRIPE_PUBLISHABLE_KEY=env('STRIPE_PUBLISHABLE_KEY')
+SITE_URL=env('SITE_URL')
 SECRET_KEY = env("SECRET_KEY")
 DEBUG = env("DEBUG")
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost"])
@@ -34,6 +36,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'flowerapp.middleware.ReferralMiddleware'
 ]
 
 ROOT_URLCONF = 'frontend.urls'

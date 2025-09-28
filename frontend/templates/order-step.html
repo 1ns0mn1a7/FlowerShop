@@ -5,11 +5,12 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Flower Shop</title>
-
+        <script src="https://js.stripe.com/v3/"></script>
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Unbounded:wght@700&display=swap" rel="stylesheet">
     <script src="{% static 'js/order_s.js' %}"></script>
+    <meta name="stripe-publishable-key" content="{{ STRIPE_PUBLISHABLE_KEY }}">
 	<link rel="stylesheet" href="{% static 'css/main.css' %}">
 </head>
 
@@ -37,28 +38,41 @@
 				<div class="order__block">
 					<div class="order_items">
 						<div class="title">Оплата</div>
-                        <form action="{% url 'order_step' %}" method="post" class="order__form orderStep_form">
+
+                        <!-- Блок для отображения ошибок -->
+                        {% if error %}
+                        <div class="error-message" style="color: red; margin-bottom: 20px;">
+                            {{ error }}
+                        </div>
+                        {% endif %}
+
+                        <form id="payment-form" method="post" class="order__form orderStep_form">
                             {% csrf_token %}
                             <input type="hidden" name="bouquet_id" value="{{ order_data.bouquet_id }}">
+
                             <div class="order__form_block">
                                 <div class="order__form_items">
-                                    <div class="order__form_intro">номер карты</div>
-                                    <input type="text" name="cardNum" class="order__form_input orderStep_form_input" placeholder="Введите номер" required>
-                                    <div class="order__form_item fic">
-                                        <input type="text" name="cardMm" class="order__form_input orderStep_form_input" placeholder="ММ" required>
-                                        <input type="text" name="cardGg" class="order__form_input orderStep_form_input" placeholder="ГГ" required>
+                                    <div class="order__form_intro">Данные карты</div>
+
+                                    <div id="card-element" class="order__form_input orderStep_form_input" style="padding: 10px;">
                                     </div>
-                                    <input type="text" name="cardFname" class="order__form_input orderStep_form_input" placeholder="Имя владельца" required>
-                                    <input type="text" name="cardCvc" class="order__form_input orderStep_form_input" placeholder="CVC" required>
+
+
+                                    <div id="card-errors" role="alert" style="color: red; margin-top: 10px;"></div>
                                 </div>
+
                                 <div class="order__form_items">
                                     <div class="order__form_intro">Ваш e-mail (необязательно)</div>
                                     <input type="email" name="mail" class="order__form_input orderStep_form_input" placeholder="pochta@mail.ru">
                                 </div>
                             </div>
+
                             <div class="order__form_line"></div>
                             <div class="order__form_btns ficb">
-                                <button type="submit" class="btn order__form_pay">Оплатить</button>
+                                <button type="submit" class="btn order__form_pay" id="submit-button">
+                                    <span id="button-text">Оплатить</span>
+                                    <div id="spinner" style="display: none;">Обработка...</div>
+                                </button>
                                 <button type="button"
                                         data-back-url="{% url 'order' %}"
                                         data-bouquet-id="{{ order_data.bouquet_id }}"
@@ -66,7 +80,6 @@
                             </div>
                         </form>
 					</div>
-					<!-- <div class="blockImgHiden"></div> -->
 				</div>
 			</div>
 		</div>
