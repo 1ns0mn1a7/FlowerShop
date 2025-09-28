@@ -4,7 +4,9 @@ from flowerapp.models import Bouquet, BouquetFlower
 from django.core.paginator import Paginator
 
 
-def index(request): return render(request, 'index.html')
+def index(request):
+    recommended = Bouquet.objects.only('id','name','price','image','image_card').order_by('id')[:3]
+    return render(request, 'index.html', {'recommended': recommended})
 
 
 def catalog(request):

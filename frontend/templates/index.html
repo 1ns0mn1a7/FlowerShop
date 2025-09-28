@@ -51,10 +51,9 @@
 			<div class="recommended p100">
 				<div class="title">Рекомендуем</div>
 				<div class="recommended__elems ficb">
-                        {#  Здесь необходим цикл  #}
-                        {% include 'bouquet_card.html' with id=4 name="Полевой" price="1 600" %}
-                        {% include 'bouquet_card.html' with id=5 name="Весенний" price="3 200" %}
-                        {% include 'bouquet_card.html' with id=6 name="Нежный" price="2 900" %}
+                        {% for b in recommended %}
+							{% include 'bouquet_card.html' with bouquet=b %}
+						{% endfor %}
 				</div>
 				<button class="btn recommended__btn">Показать всю коллекцию</button>
 			</div>
