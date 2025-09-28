@@ -37,8 +37,10 @@
 				<div class="order__block">
 					<div class="order_items">
 						<div class="title">Оформление доставки</div>
-                        <form action="{% url 'order' %}?bouquet_id={{ bouquet }}" method="post" class="order__form">
+                        <form action="{% url 'order' %}" method="post" class="order__form">
                             {% csrf_token %}
+							{% if bouquet %}<input type="hidden" name="bouquet_id" value="{{ bouquet.id }}">{% endif %}
+							
                             <div class="order__form_block ficb">
                                 <input type="text" name="fname" class="order__form_input" placeholder="Введите Имя" required value="{{ order_data.client_name|default:'' }}">
                                 <input type="text" name="tel" class="order__form_input" placeholder="+ 7 (999) 000 00 00" required value="{{ order_data.client_phone|default:'' }}">
@@ -76,8 +78,10 @@
                             <div class="order__form_btns ficb">
                                 <button type="submit" class="btn order__form_pay">Оплатить</button>
                                 <button type="button"
-                                        data-back-url="{% url 'card' bouquet_id=bouquet %}"
-                                        class="btn order__form_btn">Назад</button>
+                                        class="btn order__form_btn js-back"
+                                        data-back-url="{% if bouquet %}{% url 'card' bouquet.id %}{% else %}{% url 'catalog' %}{% endif %}">
+									Назад
+								</button>
                             </div>
                         </form>
 					</div>

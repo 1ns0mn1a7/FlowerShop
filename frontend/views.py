@@ -32,21 +32,26 @@ def card(request, bouquet_id):
 
 
 def order(request):
-    bouquet_id = request.GET.get('bouquet_id')
-    order_data = request.session.get('order_data', {})
+    bouquet_id = (
+        request.GET.get('bouquet_id')
+        or request.POST.get('bouquet_id')
+        or request.session.get('order_data', {}).get('bouquet_id')
+    )
+    bouquet = Bouquet.objects.filter(pk=bouquet_id).first() if bouquet_id else None
+
     if request.method == 'POST':
-        #Не придумал че вкорячить
         request.session['order_data'] = {
             'bouquet_id': bouquet_id,
-            'client_name':request.POST.get('fname'),
+            'client_name': request.POST.get('fname'),
             'client_phone': request.POST.get('tel'),
             'client_address': request.POST.get('adres'),
-            'delivery_time': request.POST.get('orderTime')
+            'delivery_time': request.POST.get('orderTime'),
         }
         return redirect('order_step')
+
     return render(request, 'order.html', {
-        'bouquet': bouquet_id,
-        'order_data': order_data
+        'bouquet': bouquet,
+        'order_data': request.session.get('order_data', {}),
     })
 
 
