@@ -5,13 +5,14 @@ from django.core.paginator import Paginator
 
 
 def index(request):
-    recommended = Bouquet.objects.only('id','name','price','image','image_card').order_by('id')[:3]
+    queryset = Bouquet.objects.only('id','name','price','image','image_card','is_recommended')
+    recommended = queryset.filter(is_recommended=True).order_by('id')[:3]
     return render(request, 'index.html', {'recommended': recommended})
 
 
 def catalog(request):
-    qs = Bouquet.objects.only('id','name','price','image','image_card').order_by('id')
-    page = Paginator(qs, 6).get_page(request.GET.get('page'))
+    queryset = Bouquet.objects.only('id','name','price','image','image_card').order_by('id')
+    page = Paginator(queryset, 6).get_page(request.GET.get('page'))
     return render(request, 'catalog.html', {'page_obj': page})
 
 

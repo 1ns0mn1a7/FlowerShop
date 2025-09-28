@@ -53,6 +53,8 @@
 				<div class="recommended__elems ficb">
                         {% for b in recommended %}
 							{% include 'bouquet_card.html' with bouquet=b %}
+						{% empty %}
+							<p>Пока нет рекомендаций.</p>
 						{% endfor %}
 				</div>
 				<button class="btn recommended__btn">Показать всю коллекцию</button>

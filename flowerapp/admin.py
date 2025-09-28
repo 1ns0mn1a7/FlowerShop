@@ -33,9 +33,10 @@ class EventAdmin(admin.ModelAdmin):
 
 @admin.register(Bouquet)
 class BouquetAdmin(admin.ModelAdmin):
-    list_display = ('name', 'price', 'catalog_preview', 'card_preview')
+    list_display = ('name', 'price', 'catalog_preview', 'card_preview', 'is_recommended')
     search_fields = ('name', 'description')
-    list_filter = ('events', 'additions')
+    list_editable = ('is_recommended',)
+    list_filter = ('events', 'additions', 'is_recommended')
     readonly_fields = ('catalog_preview', 'card_preview')
     filter_horizontal = ('events', 'additions')
     inlines = [BouquetFlowerInline]

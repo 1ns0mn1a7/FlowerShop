@@ -46,6 +46,11 @@ class Bouquet(models.Model):
     image = models.ImageField('Изображение каталог', upload_to='bouquets/catalog/')
     image_card = models.ImageField('Изображение карточка товара', upload_to='bouquets/card/', blank=True)
     flowers = models.ManyToManyField(Flower, verbose_name='Цветы', through='BouquetFlower')
+    is_recommended = models.BooleanField(
+        'Показывать в «Рекомендуем»',
+        default=False,
+        db_index=True,
+    )
     
     class Meta:
         verbose_name = 'Букет'
