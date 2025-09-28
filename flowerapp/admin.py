@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.utils import timezone
 from django.contrib import admin
 from django.utils.html import format_html
+from django.db.models import Sum, Count, F
 from .models import (
     Event, Flower, Addition, Bouquet, BouquetFlower,
     Courier, Order, Consultation
@@ -90,17 +91,69 @@ def export_orders_csv(modeladmin, request, queryset):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('id', 'client_name', 'client_phone', 'bouquet', 'status', 'courier', 'created_at')
-    list_filter = ('status', 'courier', 'created_at')
+    list_display = ('id', 'client_name', 'client_phone', 'bouquet', 'status_display', 'courier', 'created_at')
+    list_filter = (('created_at', admin.DateFieldListFilter), 'status', 'courier')
     search_fields = ('client_name', 'client_phone', 'bouquet__name')
     date_hierarchy = 'created_at'
     readonly_fields = ('created_at',)
     autocomplete_fields = ('bouquet', 'courier')
     actions = [export_orders_csv]
-    
+
+    @admin.display(description='Статус', ordering='status')
+    def status_display(self, obj):
+        return obj.get_status_display()
+
     def get_queryset(self, request):
-        queryset = super().get_queryset(request)
-        return queryset.select_related('bouquet', 'courier')
+        base_queryset = super().get_queryset(request)
+        return base_queryset.select_related('bouquet', 'courier')
+
+    def changelist_view(self, request, extra_context=None):
+        response = super().changelist_view(request, extra_context=extra_context)
+        try:
+            change_list = response.context_data['cl']
+            filtered_queryset = change_list.queryset.select_related('bouquet', 'courier')
+        except Exception:
+            return response
+
+        total_orders = filtered_queryset.count()
+        total_revenue = filtered_queryset.aggregate(total=Sum('bouquet__price'))['total'] or 0
+        average_check = (total_revenue / total_orders) if total_orders else 0
+
+        summary = {
+            'orders': total_orders,
+            'revenue': total_revenue,
+            'avg_check': average_check,
+        }
+
+        status_labels = dict(Order.STATUS_CHOICES)
+        by_status_queryset = (
+            filtered_queryset
+            .values('status')
+            .annotate(orders=Count('id'), revenue=Sum('bouquet__price'))
+            .order_by('status')
+        )
+        by_status = [
+            {
+                'label': status_labels.get(row['status'], row['status']),
+                'orders': row['orders'],
+                'revenue': row['revenue'],
+            }
+            for row in by_status_queryset
+        ]
+
+        top_bouquets = (
+            filtered_queryset
+            .values('bouquet_id', 'bouquet__name')
+            .annotate(cnt=Count('id'), revenue=Sum('bouquet__price'))
+            .order_by('-cnt')[:5]
+        )
+
+        response.context_data.update({
+            'summary': summary,
+            'by_status': by_status,
+            'top_bouquets': list(top_bouquets),
+        })
+        return response
 
 
 @admin.register(Consultation)

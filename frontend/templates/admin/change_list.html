@@ -1,0 +1,80 @@
+{% extends "admin/change_list.html" %}
+{% load humanize %}
+
+{% block content %}
+  {% if summary %}
+    <div class="module" style="margin-bottom:12px">
+      <h2>Сводка (по текущим фильтрам)</h2>
+      <table class="adminlist">
+        <tbody>
+          <tr>
+            <th>Заказов</th>
+            <td>{{ summary.orders|intcomma }}</td>
+          </tr>
+          <tr>
+            <th>Выручка</th>
+            <td>{{ summary.revenue|floatformat:0|intcomma }} руб</td>
+          </tr>
+          <tr>
+            <th>Средний чек</th>
+            <td>{{ summary.avg_check|floatformat:0|intcomma }} руб</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="module" style="margin-bottom:12px">
+      <h2>Статусы</h2>
+      <table class="adminlist">
+        <thead>
+          <tr>
+            <th>Статус</th>
+            <th>Заказов</th>
+            <th>Выручка</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for status_row in by_status %}
+            <tr>
+              <td>{{ status_row.label }}</td>
+              <td>{{ status_row.orders|intcomma }}</td>
+              <td>{{ status_row.revenue|default_if_none:0|floatformat:0|intcomma }} руб</td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="3">Нет данных</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="module" style="margin-bottom:12px">
+      <h2>Топ букетов</h2>
+      <table class="adminlist">
+        <thead>
+          <tr>
+            <th>Букет</th>
+            <th>Шт</th>
+            <th>Выручка</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for bouquet_row in top_bouquets %}
+            <tr>
+              <td>{{ bouquet_row.bouquet__name }}</td>
+              <td>{{ bouquet_row.cnt|intcomma }}</td>
+              <td>{{ bouquet_row.revenue|default_if_none:0|floatformat:0|intcomma }} руб</td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="3">Нет данных</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+
+  {{ block.super }}
+{% endblock %}
