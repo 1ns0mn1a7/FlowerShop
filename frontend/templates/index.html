@@ -11,10 +11,31 @@
 	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Unbounded:wght@700&display=swap" rel="stylesheet">
     <script src="{% static 'js/index.js' %}"></script>
 	<link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/order-popup.css' %}">
 </head>
 
 <body>
 	<div class="mainBg">
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div id="successPopup" class="popup-overlay" style="display: flex;">
+            <div class="popup-content">
+                <div class="popup-header">
+                    <h3>✅ Заказ успешно создан!</h3>
+                    <button class="popup-close" onclick="closePopup()">×</button>
+                </div>
+                <div class="popup-body">
+                    <p>{{ message }}</p>
+                </div>
+                <div class="popup-footer">
+                    <button class="popup-btn" onclick="closePopup()">Понятно</button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 		<header id="header">
 			<div class="container">
 				<div class="header ficb">

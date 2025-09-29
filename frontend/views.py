@@ -5,6 +5,7 @@ from django.db.models import Prefetch
 from flowerapp.models import Bouquet, BouquetFlower, Event, Flower, Addition, Order
 from django.core.paginator import Paginator
 from django.conf import settings
+from django.contrib import messages
 
 def index(request):
     queryset = Bouquet.objects.only('id','name','price','image','image_card','is_recommended')
@@ -96,12 +97,11 @@ def order_step(request):
                     bouquet=bouquet,
                     client_name=order_data.get('client_name'),
                     client_phone=order_data.get('client_phone'),
-                    #Нужна дата
-                    # client_address=order_data.get('client_address'),
+                    client_address=order_data.get('client_address'),
                     delivery_time=order_data.get('delivery_time'),
                     status='accepted'
                 )
-
+                messages.success(request, f'Заказ успешно создан! Номер вашего заказа: #{Order.objects.last().id}')
                 if order_data:
                     del request.session['order_data']
                 return redirect('index')
