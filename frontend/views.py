@@ -118,7 +118,25 @@ def order_step(request):
                     status='accepted'
                 )
                 messages.success(request, f'Заказ успешно создан! Номер вашего заказа: #{Order.objects.last().id}')
-                message = f"Создан заказ #{Order.objects.last().id}\n Имя клиента:{order_data.get('client_name')}\n Номер телефона:{order_data.get('client_phone')}\n Клиентский адрес:{order_data.get('client_address')}\n К какому времени привезти:{order_data.get('delivery_time')}\n Проверьте админку для выбора курьера"
+
+                delivery_time_code = order_data.get('delivery_time')
+                match delivery_time_code:
+                    case "1":
+                        delivery_time_text = "Не важно к какому времени"
+                    case "2":
+                        delivery_time_text = "c 10:00 до 12:00"
+                    case "3":
+                        delivery_time_text = "c 12:00 до 14:00"
+                    case "4":
+                        delivery_time_text = "c 14:00 до 16:00"
+                    case "5":
+                        delivery_time_text = "c 16:00 до 18:00"
+                    case "6":
+                        delivery_time_text = "c 18:00 до 20:00"
+                    case _:
+                        delivery_time_text = "Время не указано"
+
+                message = f"Создан заказ #{Order.objects.last().id}\n Имя клиента:{order_data.get('client_name')}\n Номер телефона:{order_data.get('client_phone')}\n Клиентский адрес:{order_data.get('client_address')}\n К какому времени привезти:{delivery_time_text}\n Проверьте админку для выбора курьера"
                 send_telegram_message(message)
                 if order_data:
                     del request.session['order_data']
