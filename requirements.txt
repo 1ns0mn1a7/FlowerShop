@@ -5,3 +5,4 @@ djangorestframework==3.16.1
 pillow==11.3.0
 sqlparse==0.5.3
 stripe==12.5.1
+python-telegram-bot==22.5

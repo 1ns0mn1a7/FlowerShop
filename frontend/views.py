@@ -1,4 +1,6 @@
 import random
+import asyncio
+
 import stripe
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Prefetch
@@ -6,7 +8,7 @@ from flowerapp.models import Bouquet, BouquetFlower, Event, Flower, Addition, Or
 from django.core.paginator import Paginator
 from django.conf import settings
 from django.contrib import messages
-
+import telegram
 def index(request):
     queryset = Bouquet.objects.only('id','name','price','image','image_card','is_recommended')
     recommended = queryset.filter(is_recommended=True).order_by('id')[:3]
@@ -61,6 +63,20 @@ def order(request):
     })
 
 
+async def send_telegram_message_async(message):
+    user_chat_id = settings.FLORIST_ID
+    token = settings.TG_BOT_TOKEN
+    try:
+        bot = telegram.Bot(token=token)
+        await bot.send_message(chat_id=user_chat_id, text=message)
+        print("Сообщение отправлено!")
+    except Exception as e:
+        print(f"Ошибка: {e}")
+
+def send_telegram_message(message):
+    asyncio.run(send_telegram_message_async(message))
+
+
 def order_step(request):
     #4242 4242 4242 4242
     stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -102,6 +118,8 @@ def order_step(request):
                     status='accepted'
                 )
                 messages.success(request, f'Заказ успешно создан! Номер вашего заказа: #{Order.objects.last().id}')
+                message = f"Создан заказ #{Order.objects.last().id}\n Имя клиента:{order_data.get('client_name')}\n Номер телефона:{order_data.get('client_phone')}\n Клиентский адрес:{order_data.get('client_address')}\n К какому времени привезти:{order_data.get('delivery_time')}\n Проверьте админку для выбора курьера"
+                send_telegram_message(message)
                 if order_data:
                     del request.session['order_data']
                 return redirect('index')
@@ -152,7 +170,29 @@ def result(request):
     event_id = data['event']
     price_id =data['price']
 
-    bouquets_query = Bouquet.objects.filter(events__id=event_id).distinct()
+    bouquets_query = Bouquet.objects.all()
+
+    match price_id:
+        case '1':
+            cost_filtered = bouquets_query.filter(price__lt=1000)
+        case '2':
+            cost_filtered = bouquets_query.filter(price__range=(1000, 5000))
+        case '3':
+            cost_filtered = bouquets_query.filter(price__gt=5000)
+        case '4':
+            cost_filtered = bouquets_query
+        case _:
+            cost_filtered = bouquets_query
+
+    if not cost_filtered.exists():
+        cost_filtered = Bouquet.objects.all()
+
+    event_filtered = cost_filtered.filter(events__id=event_id).distinct()
+
+    if not event_filtered.exists():
+        final_filtered = cost_filtered
+    else:
+        final_filtered = event_filtered
 
     bouquet_flowers_prefetch = Prefetch(
         'bouquetflower_set',
@@ -165,20 +205,7 @@ def result(request):
         to_attr='addition_items'
     )
 
-    match price_id:
-        case '1':
-            filtered = bouquets_query.filter(price__lt=1000)
-        case '2':
-            filtered = bouquets_query.filter(price__range=(1000, 5000))
-        case '3':
-            filtered = bouquets_query.filter(price__gt=5000)
-        case '4':
-            filtered = bouquets_query
-
-    if not filtered.exists():
-        filtered = bouquets_query
-
-    final_bouquets = filtered.prefetch_related(
+    final_bouquets = final_filtered.prefetch_related(
         bouquet_flowers_prefetch,
         additions_prefetch
     )

@@ -14,6 +14,8 @@ SITE_URL=env('SITE_URL')
 SECRET_KEY = env("SECRET_KEY")
 DEBUG = env("DEBUG")
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost"])
+TG_BOT_TOKEN = env("TG_BOT_TOKEN")
+FLORIST_ID = env("FLORIST_ID")
 
 INSTALLED_APPS = [
     'django.contrib.admin',
